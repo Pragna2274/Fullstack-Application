@@ -1,18 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  //output   = "../src/generated/prisma"
+  output="../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-
+  
 }
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -20,58 +15,15 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
-  orders Order[]
-  cart   Cart?
+  refreshTokens RefreshToken[]
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  image       String
-  category    String
-  createdAt   DateTime @default(now())
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
-  orderItems OrderItem[]
-  cartItems  CartItem[]
-}
-
-model Order {
-  id          String   @id @default(uuid())
-  userId      String
-  totalAmount Float
-  createdAt   DateTime @default(now())
-
-  user  User        @relation(fields: [userId], references: [id])
-  items OrderItem[]
-}
-
-model OrderItem {
-  id        String @id @default(uuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-}
-
-model Cart {
-  id     String @id @default(uuid())
-  userId String @unique
-
-  user  User       @relation(fields: [userId], references: [id])
-  items CartItem[]
-}
-
-model CartItem {
-  id        String @id @default(uuid())
-  cartId    String
-  productId String
-  quantity  Int
-
-  cart    Cart    @relation(fields: [cartId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
