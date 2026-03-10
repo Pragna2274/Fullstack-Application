@@ -2,7 +2,10 @@ import "dotenv/config"
 
 import express from "express"
 import cors from "cors"
+
 import authRoutes from "./routes/auth.routes.js"
+import productRoutes from "./routes/product.routes.js"
+import { authenticate } from "./middleware/auth.middleware.js"
 
 const app = express()
 
@@ -14,6 +17,12 @@ app.get("/", (req, res) => {
 })
 
 app.use("/auth", authRoutes)
+
+app.use("/products", productRoutes)
+
+app.get("/protected", authenticate, (req, res) => {
+  res.json({ message: "Access granted" })
+})
 
 const PORT = 5000
 
