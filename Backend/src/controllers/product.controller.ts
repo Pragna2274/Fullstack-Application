@@ -55,3 +55,13 @@ export const deleteProduct = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete product" })
   }
 }
+
+export const getFeaturedProducts = async (req: Request, res: Response) => {
+  try {
+    const products = await productService.getFeaturedProducts()
+    res.json(products)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: "Failed to fetch featured products" })
+  }
+}
