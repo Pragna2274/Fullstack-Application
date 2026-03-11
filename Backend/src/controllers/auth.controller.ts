@@ -1,16 +1,18 @@
 import { Request, Response } from "express"
 import { registerUser, loginUser, refreshAccessToken, logoutUser } from "../services/auth.service.js"
+import { registerSchema, loginSchema } from "../validations/auth.validation.js"
 
 export const register = async (req: Request, res: Response) => {
-  try {
-    const { name, email, password } = req.body
 
-    const user = await registerUser(name, email, password)
+  const parsed = registerSchema.safeParse(req.body)
 
-    res.status(201).json(user)
-  } catch (error: any) {
-    res.status(400).json({ message: error.message })
+  if (!parsed.success) {
+    return res.status(400).json(parsed.error)
   }
+
+  const user = await registerUser(parsed.data.name, parsed.data.email, parsed.data.password)
+
+  res.json(user)
 }
 
 export const login = async (req: Request, res: Response) => {
