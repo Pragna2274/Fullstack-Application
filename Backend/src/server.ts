@@ -9,7 +9,7 @@ import { authenticate } from "./middleware/auth.middleware.js"
 import cartRoutes from "./routes/cart.routes.js"
 import orderRoutes from "./routes/order.routes.js"
 import userRoutes from "./routes/user.routes.js"
-
+import paymentRoutes from "./routes/payment.routes.js"
 
 const app = express()
 
@@ -34,6 +34,7 @@ app.use("/orders", orderRoutes)
 
 app.use("/users", userRoutes)
 
+app.use("/payment", paymentRoutes)
 
 const PORT = 5000
 
