@@ -18,6 +18,7 @@ model User {
   refreshTokens RefreshToken[]
 
   carts Cart[]
+  orders Order[]
 }
 
 model RefreshToken {
@@ -39,6 +40,7 @@ model Product {
   createdAt   DateTime   @default(now())
 
   cartItems   CartItem[]
+  orderItems OrderItem[]
 }
 
 model Cart {
@@ -56,5 +58,26 @@ model CartItem {
   quantity  Int      @default(1)
 
   cart      Cart     @relation(fields: [cartId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  total     Float
+  status    String      @default("PLACED")
+  createdAt DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+
+  order     Order    @relation(fields: [orderId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
 }
