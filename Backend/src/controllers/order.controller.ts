@@ -16,11 +16,9 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
     res.json(order)
 
   } catch (error) {
-
-    console.error(error)
-
-    res.status(500).json({ error: "Failed to place order" })
-  }
+  console.error("ORDER ERROR:", error)
+  res.status(500).json({ message: "Failed to place order" })
+}
 }
 
 

@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import * as cartService from "../services/cart.service.js"
+import { addToCartSchema, updateCartSchema } from "../validations/cart.validation.js"
 
 interface AuthRequest extends Request {
   userId?: string
@@ -14,7 +15,13 @@ export const addItem = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: "User not authenticated" })
     }
 
-    const { productId, quantity } = req.body
+    const parsed = addToCartSchema.safeParse(req.body)
+
+    if (!parsed.success) {
+      return res.status(400).json(parsed.error)
+    }
+
+    const { productId, quantity } = parsed.data
 
     const item = await cartService.addToCart(userId, productId, quantity)
 
@@ -47,7 +54,13 @@ export const getUserCart = async (req: AuthRequest, res: Response) => {
 export const updateItem = async (req: Request, res: Response) => {
   try {
 
-    const { quantity } = req.body
+    const parsed = updateCartSchema.safeParse(req.body)
+
+    if (!parsed.success) {
+      return res.status(400).json(parsed.error)
+    }
+
+    const { quantity } = parsed.data
 
     const item = await cartService.updateCartItem(req.params.id as string, quantity)
 
