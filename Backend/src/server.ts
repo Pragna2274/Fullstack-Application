@@ -6,6 +6,7 @@ import cors from "cors"
 import authRoutes from "./routes/auth.routes.js"
 import productRoutes from "./routes/product.routes.js"
 import { authenticate } from "./middleware/auth.middleware.js"
+import cartRoutes from "./routes/cart.routes.js"
 
 const app = express()
 
@@ -23,6 +24,8 @@ app.use("/products", productRoutes)
 app.get("/protected", authenticate, (req, res) => {
   res.json({ message: "Access granted" })
 })
+
+app.use("/cart", cartRoutes)
 
 const PORT = 5000
 
