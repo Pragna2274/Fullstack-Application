@@ -8,6 +8,8 @@ import productRoutes from "./routes/product.routes.js"
 import { authenticate } from "./middleware/auth.middleware.js"
 import cartRoutes from "./routes/cart.routes.js"
 import orderRoutes from "./routes/order.routes.js"
+import userRoutes from "./routes/user.routes.js"
+
 
 const app = express()
 
@@ -29,6 +31,8 @@ app.get("/protected", authenticate, (req, res) => {
 app.use("/cart", cartRoutes)
 
 app.use("/orders", orderRoutes)
+
+app.use("/users", userRoutes)
 
 
 const PORT = 5000
