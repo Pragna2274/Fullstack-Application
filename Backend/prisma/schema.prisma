@@ -37,6 +37,7 @@ model Product {
   price       Float
   image       String
   category    String
+  featured    Boolean    @default(false)
   createdAt   DateTime   @default(now())
 
   cartItems   CartItem[]
