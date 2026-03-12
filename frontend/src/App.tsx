@@ -1,9 +1,22 @@
-function App() {
+import Navbar from "@/components/layout/navbar"
+import AppRoutes from "@/routes/app-routes"
+import { useLocation } from "react-router-dom"
+
+export default function App() {
+
+  const location = useLocation()
+
+  const hideNavbar =
+    location.pathname === "/login" ||
+    location.pathname === "/register"
+
   return (
-    <h1 className="text-4xl font-bold text-red-500">
-      Feasta
-    </h1>
+    <div>
+
+      {!hideNavbar && <Navbar />}
+
+      <AppRoutes />
+
+    </div>
   )
 }
-
-export default App

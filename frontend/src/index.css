@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+button {
+  transition: all 0.2s ease;
+}
