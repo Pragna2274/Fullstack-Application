@@ -1,6 +1,8 @@
+import { Minus, Plus, ShoppingBag } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useCartStore } from "@/features/cart/cart.store"
-import { createOrder } from "@/features/orders/orders.api"
+import { syncCartToBackend } from "@/features/cart/cart.api"
 
 type Props = {
   open: boolean
@@ -8,122 +10,134 @@ type Props = {
 }
 
 export default function CartSidebar({ open, setOpen }: Props) {
+  const navigate = useNavigate()
+  const items = useCartStore((state) => state.items)
+  const addItem = useCartStore((state) => state.addItem)
+  const removeItem = useCartStore((state) => state.removeItem)
 
-  const items = useCartStore((s) => s.items)
-  const removeItem = useCartStore((s) => s.removeItem)
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const total = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  )
+  const syncIfLoggedIn = async () => {
+    if (!localStorage.getItem("accessToken")) {
+      return
+    }
 
- const handleCheckout = async () => {
-
-  if (items.length === 0) {
-    alert("Your cart is empty")
-    return
+    try {
+      await syncCartToBackend(useCartStore.getState().items)
+    } catch (error) {
+      console.error("Cart sync failed", error)
+    }
   }
 
-  try {
-
-    const order = await createOrder(items)
-
-    console.log("Order:", order)
-
-    alert("Order created successfully")
-
-    setOpen(false)
-
-  } catch (error) {
-
-    console.error(error)
-
-    alert("Checkout failed")
-
-  }
-
-}
   return (
-
     <Sheet open={open} onOpenChange={setOpen}>
-
       <SheetContent
         side="right"
-        className="flex flex-col w-[380px] bg-white p-6"
+        className="flex w-full max-w-[420px] flex-col border-l border-slate-200 bg-white p-0"
       >
-
-        <SheetHeader>
-          <SheetTitle className="text-xl">
-            Cart
+        <SheetHeader className="border-b border-slate-200 px-6 py-5">
+          <SheetTitle className="flex items-center gap-3 text-xl font-black tracking-tight text-slate-900">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+              <ShoppingBag className="h-5 w-5" />
+            </span>
+            Your Cart
           </SheetTitle>
         </SheetHeader>
 
-        {/* Cart Items */}
-        <div className="mt-6 flex-1 overflow-y-auto space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          {items.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <div className="mb-4 rounded-full bg-sky-100 p-4 text-sky-700">
+                <ShoppingBag className="h-8 w-8" />
+              </div>
+              <p className="text-lg font-bold text-slate-900">No items added yet</p>
+              <p className="mt-2 text-sm text-slate-500">
+                Add a few dishes to see them here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {items.map((item) => (
+                <article
+                  key={item.id}
+                  className="rounded-[24px] border border-slate-100 bg-slate-50 p-4 shadow-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-16 w-16 rounded-2xl object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-base font-bold text-slate-900">
+                        {item.name}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Rs. {item.price.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
 
-          {items.length === 0 && (
-            <div className="text-center text-gray-500 mt-10">
-              Your cart is empty
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="inline-flex items-center rounded-full bg-white p-1 shadow-sm">
+                      <button
+                        onClick={async () => {
+                          removeItem(item.id)
+                          await syncIfLoggedIn()
+                        }}
+                        className="rounded-full p-2 text-slate-600 transition-all hover:scale-105"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="min-w-8 text-center text-sm font-bold text-slate-900">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={async () => {
+                          addItem({
+                            id: item.id,
+                            image: item.image,
+                            name: item.name,
+                            price: item.price,
+                          })
+                          await syncIfLoggedIn()
+                        }}
+                        className="rounded-full bg-sky-700 p-2 text-white transition-all hover:scale-105"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <p className="text-sm font-semibold text-sky-700">
+                      Rs. {(item.price * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
+                </article>
+              ))}
             </div>
           )}
-
-          {items.map((item) => (
-
-            <div
-              key={item.id}
-              className="flex items-center gap-3 border p-3 rounded-lg"
-            >
-
-              <img
-                src={item.image}
-                className="w-16 h-16 object-cover rounded-md"
-              />
-
-              <div className="flex-1">
-
-                <p className="font-medium">
-                  {item.name} × {item.quantity}
-                </p>
-
-                <p className="text-sm text-gray-500">
-                  ₹{item.price}
-                </p>
-
-              </div>
-
-              <button
-                onClick={() => removeItem(item.id)}
-                className="text-red-500 text-sm hover:underline"
-              >
-                Remove
-              </button>
-
-            </div>
-
-          ))}
-
         </div>
 
-        {/* Footer */}
-        <div className="border-t pt-4 mt-4">
-
-          <div className="flex justify-between font-semibold text-lg mb-4">
+        <div className="border-t border-slate-200 bg-slate-950 px-6 py-5 text-white">
+          <div className="mb-4 flex items-center justify-between text-sm text-slate-300">
+            <span>{itemCount} item{itemCount === 1 ? "" : "s"}</span>
             <span>Total</span>
-            <span>₹{total}</span>
           </div>
-
+          <div className="mb-5 text-2xl font-black text-sky-300">
+            Rs. {total.toFixed(2)}
+          </div>
           <button
-            onClick={handleCheckout}
-            className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-900 transition"
+            onClick={() => {
+              setOpen(false)
+              navigate("/cart")
+            }}
+            className="w-full rounded-full bg-sky-700 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-sky-800"
           >
-            Checkout
+            View cart and checkout
           </button>
-
         </div>
-
       </SheetContent>
-
     </Sheet>
-
   )
 }

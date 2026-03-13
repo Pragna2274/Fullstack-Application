@@ -1,10 +1,27 @@
 import { API } from "@/api/axios"
+import type { CartItem } from "@/features/cart/cart.store"
 
-export const createCheckoutSession = async (orderId: string) => {
+type CheckoutResponse = {
+  url?: string
+}
 
-  const res = await API.post("/payment/checkout", {
-    orderId
+type CheckoutResult = {
+  url: string
+}
+
+export const startCheckout = async (items: CartItem[]): Promise<CheckoutResult> => {
+  const res = await API.post<CheckoutResponse>("/payment/checkout", {
+    items: items.map((item) => ({
+      productId: item.id,
+      quantity: item.quantity,
+    })),
   })
 
-  return res.data
+  if (!res.data.url) {
+    throw new Error("Checkout URL not returned by the server.")
+  }
+
+  return {
+    url: res.data.url,
+  }
 }

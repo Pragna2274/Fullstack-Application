@@ -1,28 +1,58 @@
 import { useState } from "react"
+import { isAxiosError } from "axios"
 import { loginUser } from "./api"
-import { useNavigate, Link } from "react-router-dom"
+import { useAuthStore } from "./auth.store"
+import { useNavigate, Link, useLocation } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 export default function LoginPage() {
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const loginWithEmail = useAuthStore((state) => state.loginWithEmail)
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const redirectTo =
+    typeof location.state === "object" &&
+    location.state &&
+    "from" in location.state &&
+    typeof location.state.from === "string"
+      ? location.state.from
+      : "/"
 
   const handleLogin = async () => {
+    if (isSubmitting) {
+      return
+    }
+
     try {
+      setIsSubmitting(true)
 
       const res = await loginUser({ email, password })
 
       localStorage.setItem("accessToken", res.accessToken)
+      loginWithEmail(email)
 
-      navigate("/")
+      navigate(redirectTo)
 
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const rawMessage = isAxiosError(err)
+        ? err.response?.data?.message || err.message
+        : "Login failed"
 
-      alert(err.response?.data?.message || "Login failed")
+      const message =
+        typeof rawMessage === "string" &&
+        rawMessage.includes("Unique constraint failed on the fields: (`token`)")
+          ? "Login could not be completed right now. Please wait a moment and try again once."
+          : rawMessage
+
+      alert(message)
+    } finally {
+      setIsSubmitting(false)
 
     }
   }
@@ -45,8 +75,8 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <Button onClick={handleLogin}>
-        Login
+      <Button onClick={handleLogin} disabled={isSubmitting}>
+        {isSubmitting ? "Logging in..." : "Login"}
       </Button>
 
       <p className="text-center">

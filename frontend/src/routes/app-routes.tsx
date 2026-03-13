@@ -1,54 +1,71 @@
 import { Routes, Route } from "react-router-dom"
-import LoginPage from "@/features/auth/login-page"
-import RegisterPage from "@/features/auth/register-page"
-import HomePage from "@/features/products/home-page"
-import CartPage from "@/features/cart/cart-page"
-import OrdersPage from "@/features/orders/orders-page"
-import ProfilePage from "@/features/profile/profile-page"
-import PaymentSuccess from "@/features/payment/payment-success"
+import { lazy, Suspense } from "react"
 import ProtectedRoute from "./protected-route"
+
+const LoginPage = lazy(() => import("@/features/auth/login-page"))
+const RegisterPage = lazy(() => import("@/features/auth/register-page"))
+
+const HomePage = lazy(() => import("@/features/products/home-page"))
+const CartPage = lazy(() => import("@/features/cart/cart-page"))
+
+const OrdersPage = lazy(() => import("@/features/orders/orders-page"))
+const OrderSuccess = lazy(() => import("@/features/orders/order-success"))
+
+const ProfilePage = lazy(() => import("@/features/profile/profile-page"))
+const PaymentSuccess = lazy(() => import("@/features/payment/payment-success"))
+
+const PaymentPage = lazy(() => import("@/features/payment/payment-page"))
 
 export default function AppRoutes() {
 
   return (
 
-    <Routes>
+    <Suspense fallback={<div className="p-6 text-center">Loading...</div>}>
 
-      <Route path="/" element={<HomePage />} />
+      <Routes>
 
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<HomePage />} />
 
-      <Route
-        path="/cart"
-        element={
-          <ProtectedRoute>
-            <CartPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      <Route
-        path="/orders"
-        element={
-          <ProtectedRoute>
-            <OrdersPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route path="/cart" element={<CartPage />} />
 
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrdersPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
-    </Routes>
+        {/* PAYMENT PAGE */}
+        <Route
+          path="/payment"
+          element={
+            <ProtectedRoute>
+              <PaymentPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+
+        <Route path="/order-success" element={<OrderSuccess />} />
+
+      </Routes>
+
+    </Suspense>
 
   )
 }
