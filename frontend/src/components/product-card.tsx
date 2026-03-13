@@ -13,7 +13,12 @@ interface Product {
 export default function ProductCard({ product }: { product: Product }) {
   return (
     <Card className="overflow-hidden">
-      <img src={product.imageUrl} className="h-40 w-full object-cover" />
+     <img
+      src={product.imageUrl}
+      alt={product.name}
+      loading="lazy"
+      className="w-full h-40 object-cover rounded"
+     />
 
       <CardContent className="p-4 space-y-2">
         <h2 className="text-lg font-semibold">{product.name}</h2>

@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-type CartItem = {
+export type CartItem = {
   id: string
   name: string
   price: number
@@ -10,17 +10,17 @@ type CartItem = {
 
 type CartStore = {
   items: CartItem[]
-  addItem: (item: any) => void
+  addItem: (item: Omit<CartItem, "quantity">) => void
   removeItem: (id: string) => void
+  setItems: (items: CartItem[]) => void
+  clearCart: () => void
 }
 
 export const useCartStore = create<CartStore>((set) => ({
-
   items: [],
 
   addItem: (item) =>
     set((state) => {
-
       const existing = state.items.find((i) => i.id === item.id)
 
       if (existing) {
@@ -36,18 +36,30 @@ export const useCartStore = create<CartStore>((set) => ({
       return {
         items: [...state.items, { ...item, quantity: 1 }]
       }
-
     }),
 
   removeItem: (id) =>
-    set((state) => ({
-      items: state.items
-        .map((i) =>
+    set((state) => {
+      const item = state.items.find((i) => i.id === id)
+
+      if (!item) return state
+
+      if (item.quantity === 1) {
+        return {
+          items: state.items.filter((i) => i.id !== id)
+        }
+      }
+
+      return {
+        items: state.items.map((i) =>
           i.id === id
             ? { ...i, quantity: i.quantity - 1 }
             : i
         )
-        .filter((i) => i.quantity > 0)
-    }))
+      }
+    }),
 
+  setItems: (items) => set({ items }),
+
+  clearCart: () => set({ items: [] })
 }))

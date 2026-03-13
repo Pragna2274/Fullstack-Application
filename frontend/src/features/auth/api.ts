@@ -16,3 +16,12 @@ export const loginUser = async (data: {
   const res = await API.post("/auth/login", data)
   return res.data
 }
+export const logoutUser = async () => {
+
+  const refreshToken = localStorage.getItem("refreshToken")
+
+  await API.post("/auth/logout", { refreshToken })
+
+  localStorage.removeItem("accessToken")
+  localStorage.removeItem("refreshToken")
+}
