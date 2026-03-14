@@ -11,9 +11,11 @@ export const getStripeConfig = async (_req: Request, res: Response) => {
   const publishableKey = process.env.STRIPE_PUBLIC_KEY?.trim()
 
   if (!publishableKey) {
+    console.error("[stripe] missing STRIPE_PUBLIC_KEY")
     return res.status(500).json({ message: "Stripe publishable key is not configured" })
   }
 
+  console.log("[stripe] publishable key requested")
   res.json({ publishableKey })
 }
 
@@ -66,6 +68,14 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response) => {
       userId
     })
 
+    console.log("[stripe] create-payment-intent success", {
+      userId,
+      orderId: order.id,
+      total,
+      clientSecretPresent: Boolean(paymentIntent.client_secret),
+      paymentIntentId: paymentIntent.id,
+    })
+
     res.json({
       orderId: order.id,
       amount: total,
@@ -74,7 +84,7 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response) => {
 
   } catch (error) {
 
-    console.error(error)
+    console.error("[stripe] create-payment-intent failed", error)
 
     res.status(500).json({ message: "Payment failed" })
 
@@ -114,6 +124,10 @@ export const confirmPayment = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Order not found" })
     }
 
+    if (paymentIntent.metadata.orderId !== orderId || paymentIntent.metadata.userId !== userId) {
+      return res.status(400).json({ message: "Payment does not match this order" })
+    }
+
     await prisma.order.update({
       where: { id: orderId },
       data: { status: "PAID" }
@@ -129,9 +143,15 @@ export const confirmPayment = async (req: AuthRequest, res: Response) => {
       })
     }
 
+    console.log("[stripe] payment confirmed", {
+      userId,
+      orderId,
+      paymentIntentId,
+    })
+
     res.json({ success: true })
   } catch (error) {
-    console.error(error)
+    console.error("[stripe] confirm-payment failed", error)
     res.status(500).json({ message: "Payment confirmation failed" })
   }
 }

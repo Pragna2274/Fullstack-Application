@@ -12,7 +12,6 @@ const OrdersPage = lazy(() => import("@/features/orders/orders-page"))
 const OrderSuccess = lazy(() => import("@/features/orders/order-success"))
 
 const ProfilePage = lazy(() => import("@/features/profile/profile-page"))
-const PaymentSuccess = lazy(() => import("@/features/payment/payment-success"))
 
 const PaymentPage = lazy(() => import("@/features/payment/payment-page"))
 
@@ -58,8 +57,6 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
-        <Route path="/payment-success" element={<PaymentSuccess />} />
 
         <Route path="/order-success" element={<OrderSuccess />} />
 

@@ -1,9 +1,26 @@
+import { useEffect, useMemo, useState } from "react"
 import { Link, Navigate } from "react-router-dom"
 import { ArrowRight, Clock3, MapPin, PackageCheck } from "lucide-react"
 import { useAuthStore } from "@/features/auth/auth.store"
 import { useOrdersStore } from "./orders.store"
+import { getOrders, type Order as ApiOrder } from "./orders.api"
 
 const formatCurrency = (amount: number) => `Rs. ${amount.toFixed(2)}`
+
+type DisplayOrder = {
+  id: string
+  total: number
+  status: string
+  createdAt: string
+  paymentMethod?: "UPI" | "COD"
+  items: Array<{
+    id: string
+    name: string
+    image: string
+    price: number
+    quantity: number
+  }>
+}
 
 export default function OrdersPage() {
   const token = localStorage.getItem("accessToken")
@@ -11,6 +28,8 @@ export default function OrdersPage() {
   const profilesByEmail = useAuthStore((state) => state.profilesByEmail)
   const savedEmail = localStorage.getItem("feasta-current-user-email")
   const ordersByUser = useOrdersStore((state) => state.ordersByUser)
+  const [remoteOrders, setRemoteOrders] = useState<ApiOrder[] | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   if (!token) {
     return <Navigate to="/login" replace />
@@ -32,7 +51,49 @@ export default function OrdersPage() {
       ? ordersByUser[effectiveEmail]
       : []
 
-  const orders = Array.isArray(rawOrders) ? rawOrders : []
+  const localOrders = Array.isArray(rawOrders) ? rawOrders : []
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        setLoadError(null)
+        const orders = await getOrders()
+        setRemoteOrders(orders)
+      } catch (error) {
+        console.error("Failed to load backend orders", error)
+        setLoadError("Unable to load latest orders from the server.")
+      }
+    }
+
+    void loadOrders()
+  }, [])
+
+  const orders = useMemo<DisplayOrder[]>(() => {
+    if (remoteOrders && remoteOrders.length > 0) {
+      return [...remoteOrders]
+        .sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .map((order) => ({
+          id: order.id,
+          total: order.total,
+          status: order.status,
+          createdAt: order.createdAt,
+          paymentMethod: order.paymentMethod || "COD",
+          items: order.items.map((item) => ({
+            id: item.product.id,
+            name: item.product.name,
+            image: item.product.image,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+        }))
+    }
+
+    return [...localOrders].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+  }, [localOrders, remoteOrders])
 
   if (!effectiveUser) {
     return (
@@ -85,6 +146,9 @@ export default function OrdersPage() {
           <p className="mt-3 text-sm text-slate-500">
             Orders placed while logged in with this account will appear here.
           </p>
+          {loadError ? (
+            <p className="mt-2 text-xs text-amber-600">{loadError}</p>
+          ) : null}
         </div>
       ) : null}
 

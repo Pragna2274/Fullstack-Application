@@ -16,6 +16,7 @@ export type Order = {
   total: number
   status: string
   createdAt: string
+  paymentMethod?: "UPI" | "COD"
   items: OrderItem[]
 }
 

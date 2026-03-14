@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import * as orderService from "../services/order.service.js"
+import { placeOrderSchema } from "../validations/order.validation.js"
 
 interface AuthRequest extends Request {
   userId?: string
@@ -10,15 +11,22 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
   try {
 
     const userId = req.userId!
+    const parsed = placeOrderSchema.safeParse(req.body)
 
-    const order = await orderService.placeOrder(userId)
+    if (!parsed.success) {
+      return res.status(400).json(parsed.error)
+    }
+
+    const order = await orderService.placeOrder(userId, parsed.data.items)
 
     res.json(order)
 
   } catch (error) {
-  console.error("ORDER ERROR:", error)
-  res.status(500).json({ message: "Failed to place order" })
-}
+    console.error("ORDER ERROR:", error)
+    res.status(500).json({
+      message: error instanceof Error ? error.message : "Failed to place order",
+    })
+  }
 }
 
 
