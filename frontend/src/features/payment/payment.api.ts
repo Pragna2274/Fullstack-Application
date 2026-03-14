@@ -1,27 +1,52 @@
 import { API } from "@/api/axios"
-import type { CartItem } from "@/features/cart/cart.store"
 
-type CheckoutResponse = {
-  url?: string
+type CreatePaymentIntentResponse = {
+  orderId?: string | null
+  amount?: number | null
+  clientSecret?: string | null
 }
 
-type CheckoutResult = {
-  url: string
+type ConfirmPaymentResponse = {
+  success: boolean
 }
 
-export const startCheckout = async (items: CartItem[]): Promise<CheckoutResult> => {
-  const res = await API.post<CheckoutResponse>("/payment/checkout", {
-    items: items.map((item) => ({
-      productId: item.id,
-      quantity: item.quantity,
-    })),
-  })
+type StripeConfigResponse = {
+  publishableKey?: string | null
+}
 
-  if (!res.data.url) {
-    throw new Error("Checkout URL not returned by the server.")
+export const getStripeConfig = async () => {
+  const res = await API.get<StripeConfigResponse>("/payment/config")
+
+  if (!res.data.publishableKey) {
+    throw new Error("Stripe publishable key was not returned by the server.")
   }
 
   return {
-    url: res.data.url,
+    publishableKey: res.data.publishableKey,
   }
+}
+
+export const createPaymentIntent = async () => {
+  const res = await API.post<CreatePaymentIntentResponse>(
+    "/payment/create-payment-intent"
+  )
+
+  if (!res.data.clientSecret || !res.data.orderId || typeof res.data.amount !== "number") {
+    throw new Error("Payment details were not returned by the server.")
+  }
+
+  return {
+    orderId: res.data.orderId,
+    amount: res.data.amount,
+    clientSecret: res.data.clientSecret,
+  }
+}
+
+export const confirmPayment = async (orderId: string, paymentIntentId: string) => {
+  const res = await API.post<ConfirmPaymentResponse>("/payment/confirm", {
+    orderId,
+    paymentIntentId,
+  })
+
+  return res.data
 }

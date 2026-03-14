@@ -35,6 +35,7 @@ export default function LoginPage() {
       const res = await loginUser({ email, password })
 
       localStorage.setItem("accessToken", res.accessToken)
+      localStorage.setItem("refreshToken", res.refreshToken)
       loginWithEmail(email)
 
       navigate(redirectTo)

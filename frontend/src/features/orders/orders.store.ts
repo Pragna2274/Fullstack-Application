@@ -14,7 +14,7 @@ export type StoredOrder = {
   total: number
   status: string
   createdAt: string
-  paymentMethod: "UPI" | "COD"
+  paymentMethod: "STRIPE" | "COD"
   items: StoredOrderItem[]
 }
 
@@ -24,7 +24,7 @@ type OrdersState = {
     email: string,
     items: StoredOrderItem[],
     total: number,
-    paymentMethod: "UPI" | "COD"
+    paymentMethod: "STRIPE" | "COD"
   ) => void
 }
 

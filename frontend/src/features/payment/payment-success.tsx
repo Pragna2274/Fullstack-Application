@@ -3,11 +3,14 @@ import { useEffect } from "react"
 import { CheckCircle2 } from "lucide-react"
 import { useCartStore } from "@/features/cart/cart.store"
 
+const PENDING_STRIPE_ORDER_KEY = "pendingStripeOrder"
+
 export default function PaymentSuccess() {
   const clearCart = useCartStore((state) => state.clearCart)
 
   useEffect(() => {
     clearCart()
+    sessionStorage.removeItem(PENDING_STRIPE_ORDER_KEY)
     sessionStorage.removeItem("paymentOrderId")
     sessionStorage.removeItem("paymentOrderTotal")
   }, [clearCart])
