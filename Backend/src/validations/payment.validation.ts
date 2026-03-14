@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const paymentSchema = z.object({
-  amount: z.number().positive("Amount must be positive"),
-  orderId: z.string().uuid("Invalid order id")
+export const confirmPaymentSchema = z.object({
+  orderId: z.string().uuid("Invalid order id"),
+  paymentIntentId: z.string().min(1, "Payment intent id is required")
 })

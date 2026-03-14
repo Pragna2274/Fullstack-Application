@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { ClipboardList, LogIn, LogOut, ShoppingBag, UserRound } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { logoutUser } from "@/features/auth/api"
 import { useCartStore } from "@/features/cart/cart.store"
 import { useAuthStore } from "@/features/auth/auth.store"
 import CartSidebar from "@/components/cart/cart-sidebar"
@@ -20,11 +21,17 @@ export default function Navbar() {
   const token = localStorage.getItem("accessToken")
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
-    logout()
-    navigate("/", { replace: true })
+  const handleLogout = async () => {
+    try {
+      await logoutUser()
+    } catch (error) {
+      console.error("Logout failed", error)
+      localStorage.removeItem("accessToken")
+      localStorage.removeItem("refreshToken")
+    } finally {
+      logout()
+      navigate("/", { replace: true })
+    }
   }
 
   return (
