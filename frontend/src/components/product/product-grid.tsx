@@ -20,14 +20,33 @@ export default function ProductGrid({ category }: Props) {
   const [products, setProducts] = useState<Product[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
 
   const fetchProducts = async () => {
+    if (loading || !hasMore) {
+      return
+    }
 
     setLoading(true)
 
     const data = await getProducts(page, 10)
 
-    setProducts((prev) => [...prev, ...data])
+    if (!Array.isArray(data) || data.length === 0) {
+      setHasMore(false)
+      setLoading(false)
+      return
+    }
+
+    setProducts((prev) => {
+      const existingIds = new Set(prev.map((item) => item.id))
+      const nextItems = data.filter((item: Product) => !existingIds.has(item.id))
+
+      return [...prev, ...nextItems]
+    })
+
+    if (data.length < 10) {
+      setHasMore(false)
+    }
 
     setLoading(false)
 
@@ -41,6 +60,9 @@ export default function ProductGrid({ category }: Props) {
   useEffect(() => {
 
     const handleScroll = () => {
+      if (loading || !hasMore) {
+        return
+      }
 
       if (
         window.innerHeight + window.scrollY >=
@@ -55,7 +77,7 @@ export default function ProductGrid({ category }: Props) {
 
     return () => window.removeEventListener("scroll", handleScroll)
 
-  }, [])
+  }, [hasMore, loading])
 
   const filteredProducts =
     category === "All"

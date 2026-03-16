@@ -2,7 +2,11 @@ import { Minus, Plus, ShoppingBag } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useCartStore } from "@/features/cart/cart.store"
-import { syncCartToBackend } from "@/features/cart/cart.api"
+import {
+  addServerCartItem,
+  deleteServerCartItem,
+  updateServerCartItem,
+} from "@/features/cart/cart.api"
 
 type Props = {
   open: boolean
@@ -14,17 +18,41 @@ export default function CartSidebar({ open, setOpen }: Props) {
   const items = useCartStore((state) => state.items)
   const addItem = useCartStore((state) => state.addItem)
   const removeItem = useCartStore((state) => state.removeItem)
+  const setServerItemId = useCartStore((state) => state.setServerItemId)
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const syncIfLoggedIn = async () => {
+  const syncIncremental = async (
+    item: (typeof items)[number],
+    action: "increment" | "decrement"
+  ) => {
     if (!localStorage.getItem("accessToken")) {
       return
     }
 
     try {
-      await syncCartToBackend(useCartStore.getState().items)
+      if (action === "increment") {
+        if (!item.serverItemId) {
+          const createdItem = await addServerCartItem(item.id, 1)
+          setServerItemId(item.id, createdItem.id)
+          return
+        }
+
+        await updateServerCartItem(item.serverItemId, item.quantity + 1)
+        return
+      }
+
+      if (!item.serverItemId) {
+        return
+      }
+
+      if (item.quantity === 1) {
+        await deleteServerCartItem(item.serverItemId)
+        return
+      }
+
+      await updateServerCartItem(item.serverItemId, item.quantity - 1)
     } catch (error) {
       console.error("Cart sync failed", error)
     }
@@ -83,8 +111,8 @@ export default function CartSidebar({ open, setOpen }: Props) {
                     <div className="inline-flex items-center rounded-full bg-white p-1 shadow-sm">
                       <button
                         onClick={async () => {
+                          await syncIncremental(item, "decrement")
                           removeItem(item.id)
-                          await syncIfLoggedIn()
                         }}
                         className="rounded-full p-2 text-slate-600 transition-all hover:scale-105"
                       >
@@ -95,13 +123,14 @@ export default function CartSidebar({ open, setOpen }: Props) {
                       </span>
                       <button
                         onClick={async () => {
+                          await syncIncremental(item, "increment")
                           addItem({
                             id: item.id,
                             image: item.image,
                             name: item.name,
                             price: item.price,
+                            serverItemId: item.serverItemId,
                           })
-                          await syncIfLoggedIn()
                         }}
                         className="rounded-full bg-sky-700 p-2 text-white transition-all hover:scale-105"
                       >

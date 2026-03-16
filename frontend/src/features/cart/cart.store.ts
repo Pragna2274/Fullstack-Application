@@ -6,12 +6,14 @@ export type CartItem = {
   price: number
   image: string
   quantity: number
+  serverItemId?: string
 }
 
 type CartStore = {
   items: CartItem[]
   addItem: (item: Omit<CartItem, "quantity">) => void
   removeItem: (id: string) => void
+  setServerItemId: (productId: string, serverItemId?: string) => void
   setItems: (items: CartItem[]) => void
   clearCart: () => void
 }
@@ -58,6 +60,15 @@ export const useCartStore = create<CartStore>((set) => ({
         )
       }
     }),
+
+  setServerItemId: (productId, serverItemId) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === productId
+          ? { ...item, serverItemId }
+          : item
+      ),
+    })),
 
   setItems: (items) => set({ items }),
 

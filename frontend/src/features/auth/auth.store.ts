@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware"
 
 export type UserProfile = {
   name: string
@@ -9,28 +9,19 @@ export type UserProfile = {
 
 type AuthState = {
   currentUser: UserProfile | null
-  profilesByEmail: Record<string, UserProfile>
-  registerProfile: (profile: Omit<UserProfile, "address"> & { address?: string }) => void
-  loginWithEmail: (email: string) => void
+  setCurrentUser: (profile: Omit<UserProfile, "address"> & { address?: string }) => void
   updateAddress: (address: string) => void
   syncCurrentUserFromStorage: () => void
   logout: () => void
 }
 
-const createDefaultProfile = (email: string): UserProfile => ({
-  name: email.split("@")[0] || "Feasta User",
-  email,
-  address: "",
-})
-
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       currentUser: null,
-      profilesByEmail: {},
 
-      registerProfile: (profile) =>
-        set((state) => {
+      setCurrentUser: (profile) =>
+        set(() => {
           const nextProfile: UserProfile = {
             name: profile.name,
             email: profile.email,
@@ -38,24 +29,7 @@ export const useAuthStore = create<AuthState>()(
           }
 
           return {
-            profilesByEmail: {
-              ...state.profilesByEmail,
-              [profile.email]: nextProfile,
-            },
-          }
-        }),
-
-      loginWithEmail: (email) =>
-        set((state) => {
-          const profile = state.profilesByEmail[email] || createDefaultProfile(email)
-          localStorage.setItem("feasta-current-user-email", email)
-
-          return {
-            currentUser: profile,
-            profilesByEmail: {
-              ...state.profilesByEmail,
-              [email]: profile,
-            },
+            currentUser: nextProfile,
           }
         }),
 
@@ -74,10 +48,6 @@ export const useAuthStore = create<AuthState>()(
 
           return {
             currentUser: nextProfile,
-            profilesByEmail: {
-              ...state.profilesByEmail,
-              [currentUser.email]: nextProfile,
-            },
           }
         }),
 
@@ -87,27 +57,11 @@ export const useAuthStore = create<AuthState>()(
             return state
           }
 
-          const email = localStorage.getItem("feasta-current-user-email")
-
-          if (!email) {
-            return state
-          }
-
-          const profile = state.profilesByEmail[email] || createDefaultProfile(email)
-
-          return {
-            currentUser: profile,
-            profilesByEmail: {
-              ...state.profilesByEmail,
-              [email]: profile,
-            },
-          }
+          return state
         }),
 
       logout: () =>
         set(() => {
-          localStorage.removeItem("feasta-current-user-email")
-
           return {
             currentUser: null,
           }
@@ -115,6 +69,10 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "feasta-auth-store",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => ({
+        currentUser: state.currentUser,
+      }),
     }
   )
 )

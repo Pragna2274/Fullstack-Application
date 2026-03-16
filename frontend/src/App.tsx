@@ -6,6 +6,17 @@ import { useAuthStore } from "@/features/auth/auth.store"
 import { loadCartFromBackend } from "@/features/cart/cart.api"
 import { useCartStore } from "@/features/cart/cart.store"
 
+const LEGACY_STORAGE_KEYS = [
+  "cart",
+  "orders",
+  "user",
+  "wishlist",
+  "expense_tracker_db",
+  "feasta-current-user-email",
+  "feasta-auth-store",
+  "feasta-orders-store",
+]
+
 export default function App() {
 
   const location = useLocation()
@@ -14,6 +25,12 @@ export default function App() {
   )
   const currentUser = useAuthStore((state) => state.currentUser)
   const setItems = useCartStore((state) => state.setItems)
+
+  useEffect(() => {
+    LEGACY_STORAGE_KEYS.forEach((key) => {
+      localStorage.removeItem(key)
+    })
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {

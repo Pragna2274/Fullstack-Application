@@ -10,7 +10,7 @@ export default function LoginPage() {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const loginWithEmail = useAuthStore((state) => state.loginWithEmail)
+  const setCurrentUser = useAuthStore((state) => state.setCurrentUser)
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -36,7 +36,11 @@ export default function LoginPage() {
 
       localStorage.setItem("accessToken", res.accessToken)
       localStorage.setItem("refreshToken", res.refreshToken)
-      loginWithEmail(email)
+      setCurrentUser({
+        name: res.user.name,
+        email: res.user.email,
+        address: "",
+      })
 
       navigate(redirectTo)
 

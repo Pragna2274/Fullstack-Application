@@ -25,8 +25,6 @@ type DisplayOrder = {
 export default function OrdersPage() {
   const token = localStorage.getItem("accessToken")
   const currentUser = useAuthStore((state) => state.currentUser)
-  const profilesByEmail = useAuthStore((state) => state.profilesByEmail)
-  const savedEmail = localStorage.getItem("feasta-current-user-email")
   const ordersByUser = useOrdersStore((state) => state.ordersByUser)
   const [remoteOrders, setRemoteOrders] = useState<ApiOrder[] | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -35,11 +33,11 @@ export default function OrdersPage() {
     return <Navigate to="/login" replace />
   }
 
-  const effectiveEmail = currentUser?.email || savedEmail || ""
+  const effectiveEmail = currentUser?.email || ""
   const effectiveUser =
     currentUser ||
     (effectiveEmail
-      ? profilesByEmail[effectiveEmail] || {
+      ? {
           name: effectiveEmail.split("@")[0] || "Feasta User",
           email: effectiveEmail,
           address: "",
@@ -52,6 +50,10 @@ export default function OrdersPage() {
       : []
 
   const localOrders = Array.isArray(rawOrders) ? rawOrders : []
+  const localOrdersById = useMemo(
+    () => new Map(localOrders.map((order) => [order.id, order])),
+    [localOrders]
+  )
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -79,7 +81,7 @@ export default function OrdersPage() {
           total: order.total,
           status: order.status,
           createdAt: order.createdAt,
-          paymentMethod: order.paymentMethod || "COD",
+          paymentMethod: localOrdersById.get(order.id)?.paymentMethod || order.paymentMethod || "COD",
           items: order.items.map((item) => ({
             id: item.product.id,
             name: item.product.name,
@@ -93,7 +95,7 @@ export default function OrdersPage() {
     return [...localOrders].sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
-  }, [localOrders, remoteOrders])
+  }, [localOrders, localOrdersById, remoteOrders])
 
   if (!effectiveUser) {
     return (
@@ -112,13 +114,13 @@ export default function OrdersPage() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.32em] text-sky-700">
             Order history
           </p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-4xl">
             Orders for {effectiveUser.name}
           </h1>
           {effectiveUser.address ? (
@@ -159,14 +161,14 @@ export default function OrdersPage() {
           return (
             <article
               key={order.id}
-              className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60 transition-all hover:-translate-y-1 hover:shadow-xl"
+              className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-lg shadow-slate-200/60 transition-all hover:-translate-y-1 hover:shadow-xl sm:p-6"
             >
               <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.28em] text-sky-700">
                     Order #{String(order.id).slice(0, 8)}
                   </p>
-                  <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
+                  <h2 className="mt-2 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
                     {formatCurrency(Number(order.total) || 0)}
                   </h2>
                 </div>
@@ -192,12 +194,12 @@ export default function OrdersPage() {
                 {items.map((item) => (
                   <div
                     key={`${order.id}-${item.id}`}
-                    className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4"
+                    className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 sm:gap-4 sm:p-4"
                   >
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="h-16 w-16 rounded-2xl object-cover"
+                      className="h-14 w-14 rounded-2xl object-cover sm:h-16 sm:w-16"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-base font-bold text-slate-900">

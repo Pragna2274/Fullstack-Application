@@ -1,6 +1,10 @@
 import { Minus, Plus, ShoppingBag } from "lucide-react"
 import { useCartStore } from "@/features/cart/cart.store"
-import { syncCartToBackend } from "@/features/cart/cart.api"
+import {
+  addServerCartItem,
+  deleteServerCartItem,
+  updateServerCartItem,
+} from "@/features/cart/cart.api"
 
 type Product = {
   id: string
@@ -19,16 +23,40 @@ export default function ProductCard({ product }: Props) {
   const items = useCartStore((state) => state.items)
   const addItem = useCartStore((state) => state.addItem)
   const removeItem = useCartStore((state) => state.removeItem)
+  const setServerItemId = useCartStore((state) => state.setServerItemId)
 
   const cartItem = items.find((item) => item.id === product.id)
 
-  const syncIfLoggedIn = async () => {
+  const addToBackendIfLoggedIn = async () => {
     if (!localStorage.getItem("accessToken")) {
       return
     }
 
     try {
-      await syncCartToBackend(useCartStore.getState().items)
+      if (!cartItem?.serverItemId) {
+        const createdItem = await addServerCartItem(product.id, 1)
+        setServerItemId(product.id, createdItem.id)
+        return
+      }
+
+      await updateServerCartItem(cartItem.serverItemId, cartItem.quantity + 1)
+    } catch (error) {
+      console.error("Cart sync failed", error)
+    }
+  }
+
+  const removeFromBackendIfLoggedIn = async () => {
+    if (!localStorage.getItem("accessToken") || !cartItem?.serverItemId) {
+      return
+    }
+
+    try {
+      if (cartItem.quantity === 1) {
+        await deleteServerCartItem(cartItem.serverItemId)
+        return
+      }
+
+      await updateServerCartItem(cartItem.serverItemId, cartItem.quantity - 1)
     } catch (error) {
       console.error("Cart sync failed", error)
     }
@@ -73,7 +101,7 @@ export default function ProductCard({ product }: Props) {
             <button
               onClick={async () => {
                 addItem(product)
-                await syncIfLoggedIn()
+                await addToBackendIfLoggedIn()
               }}
               className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105"
             >
@@ -84,8 +112,8 @@ export default function ProductCard({ product }: Props) {
             <div className="inline-flex items-center gap-3 rounded-full border border-sky-100 bg-sky-50 px-3 py-2 shadow-sm">
               <button
                 onClick={async () => {
+                  await removeFromBackendIfLoggedIn()
                   removeItem(product.id)
-                  await syncIfLoggedIn()
                 }}
                 className="rounded-full bg-white p-2 text-slate-700 transition-all hover:scale-105"
                 aria-label={`Decrease quantity of ${product.name}`}
@@ -98,7 +126,7 @@ export default function ProductCard({ product }: Props) {
               <button
                 onClick={async () => {
                   addItem(product)
-                  await syncIfLoggedIn()
+                  await addToBackendIfLoggedIn()
                 }}
                 className="rounded-full bg-sky-700 p-2 text-white transition-all hover:scale-105"
                 aria-label={`Increase quantity of ${product.name}`}

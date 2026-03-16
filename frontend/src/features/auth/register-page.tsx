@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { isAxiosError } from "axios"
 import { registerUser } from "./api"
-import { useAuthStore } from "./auth.store"
 import { useNavigate, Link } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button"
 export default function RegisterPage() {
 
   const navigate = useNavigate()
-  const registerProfile = useAuthStore((state) => state.registerProfile)
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -28,11 +26,6 @@ export default function RegisterPage() {
       name,
       email,
       password
-    })
-
-    registerProfile({
-      name,
-      email,
     })
 
     alert("Registration successful")

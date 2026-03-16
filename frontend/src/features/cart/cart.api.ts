@@ -23,7 +23,12 @@ export const getServerCart = async () => {
 }
 
 export const addServerCartItem = async (productId: string, quantity: number) => {
-  const res = await API.post("/cart/add", { productId, quantity })
+  const res = await API.post<ServerCartItem>("/cart/add", { productId, quantity })
+  return res.data
+}
+
+export const updateServerCartItem = async (itemId: string, quantity: number) => {
+  const res = await API.put<ServerCartItem>(`/cart/item/${itemId}`, { quantity })
   return res.data
 }
 
@@ -50,5 +55,6 @@ export const loadCartFromBackend = async (): Promise<CartItem[]> => {
     price: item.product.price,
     image: item.product.image,
     quantity: item.quantity,
+    serverItemId: item.id,
   }))
 }

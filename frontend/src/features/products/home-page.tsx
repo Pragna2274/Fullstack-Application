@@ -61,12 +61,13 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="mb-8 flex flex-wrap gap-3">
+        <div className="-mx-4 mb-8 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+          <div className="flex min-w-max gap-3">
           {categories.map((currentCategory) => (
             <button
               key={currentCategory}
               onClick={() => setCategory(currentCategory)}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:scale-105 ${
+              className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:scale-105 ${
                 category === currentCategory
                   ? "bg-slate-950 text-white shadow-lg"
                   : "border border-slate-200 bg-white text-slate-600 shadow-sm hover:border-sky-200 hover:text-sky-700"
@@ -75,6 +76,7 @@ export default function HomePage() {
               {currentCategory}
             </button>
           ))}
+          </div>
         </div>
 
         <ProductGrid category={category} />

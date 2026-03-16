@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware"
 
 type StoredOrderItem = {
   id: string
@@ -24,7 +24,12 @@ type OrdersState = {
     email: string,
     items: StoredOrderItem[],
     total: number,
-    paymentMethod: "UPI" | "COD"
+    paymentMethod: "UPI" | "COD",
+    options?: {
+      id?: string
+      status?: string
+      createdAt?: string
+    }
   ) => void
 }
 
@@ -33,16 +38,16 @@ export const useOrdersStore = create<OrdersState>()(
     (set) => ({
       ordersByUser: {},
 
-      addOrder: (email, items, total, paymentMethod) =>
+      addOrder: (email, items, total, paymentMethod, options) =>
         set((state) => ({
           ordersByUser: {
             ...state.ordersByUser,
             [email]: [
               {
-                id: crypto.randomUUID(),
+                id: options?.id || crypto.randomUUID(),
                 total,
-                status: "Placed",
-                createdAt: new Date().toISOString(),
+                status: options?.status || "Placed",
+                createdAt: options?.createdAt || new Date().toISOString(),
                 paymentMethod,
                 items,
               },
@@ -53,6 +58,7 @@ export const useOrdersStore = create<OrdersState>()(
     }),
     {
       name: "feasta-orders-store",
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 )

@@ -38,20 +38,20 @@ export default function ProfilePage() {
     .toUpperCase()
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-xl shadow-slate-200/70">
-          <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-sky-800 px-8 py-8 text-white">
+          <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-sky-800 px-5 py-6 text-white sm:px-8 sm:py-8">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-[24px] bg-white/15 text-2xl font-black backdrop-blur">
+                <div className="flex h-16 w-16 items-center justify-center rounded-[24px] bg-white/15 text-xl font-black backdrop-blur sm:h-20 sm:w-20 sm:text-2xl">
                   {initials}
                 </div>
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.3em] text-sky-200">
                     Feasta account
                   </p>
-                  <h1 className="mt-2 text-3xl font-black tracking-tight">
+                  <h1 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">
                     {currentUser.name}
                   </h1>
                   <p className="mt-1 text-sm text-slate-200">{currentUser.email}</p>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="grid gap-4 p-8 sm:grid-cols-3">
+          <div className="grid gap-4 p-5 sm:grid-cols-3 sm:p-8">
             <div className="rounded-[24px] border border-slate-100 bg-slate-50 p-5">
               <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
                 <PackageCheck className="h-5 w-5" />

@@ -37,15 +37,15 @@ export default function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link to="/" className="shrink-0">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-md">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-black text-white shadow-md sm:h-11 sm:w-11">
                 F
               </div>
-              <div>
-                <p className="text-xl font-black tracking-tight text-slate-950">Feasta</p>
-                <p className="text-xs font-medium uppercase tracking-[0.28em] text-slate-400">
+              <div className="min-w-0">
+                <p className="text-lg font-black tracking-tight text-slate-950 sm:text-xl">Feasta</p>
+                <p className="hidden text-[11px] font-medium uppercase tracking-[0.28em] text-slate-400 sm:block">
                   Simple food ordering
                 </p>
               </div>
@@ -85,7 +85,7 @@ export default function Navbar() {
             ) : null}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {token ? (
               <Link to="/profile" className="hidden sm:block md:hidden">
                 <Button
@@ -112,10 +112,10 @@ export default function Navbar() {
 
             <button
               onClick={() => setOpen(true)}
-              className="relative inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-slate-800"
+              className="relative inline-flex items-center gap-2 rounded-full bg-slate-950 px-3 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-slate-800 sm:px-4"
             >
               <ShoppingBag className="h-4 w-4" />
-              Cart
+              <span className="hidden sm:inline">Cart</span>
               {itemCount > 0 ? (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-600 px-1 text-[11px] font-bold text-white">
                   {itemCount}
@@ -126,16 +126,16 @@ export default function Navbar() {
             {token ? (
               <Button
                 onClick={handleLogout}
-                className="rounded-full bg-sky-700 px-5 text-white shadow-md hover:bg-sky-800"
+                className="rounded-full bg-sky-700 px-3 text-white shadow-md hover:bg-sky-800 sm:px-5"
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             ) : (
               <Link to="/login">
-                <Button className="rounded-full bg-sky-700 px-5 text-white shadow-md hover:bg-sky-800">
+                <Button className="rounded-full bg-sky-700 px-3 text-white shadow-md hover:bg-sky-800 sm:px-5">
                   <LogIn className="h-4 w-4" />
-                  Login
+                  <span className="hidden sm:inline">Login</span>
                 </Button>
               </Link>
             )}

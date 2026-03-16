@@ -62,7 +62,12 @@ export default function PaymentPage() {
         currentUser.email,
         items,
         typeof order.total === "number" ? order.total : total,
-        paymentMethod
+        paymentMethod,
+        {
+          id: order.id,
+          status: order.status,
+          createdAt: order.createdAt,
+        }
       )
       setIsOrderPlaced(true)
       clearCart()
@@ -89,10 +94,10 @@ export default function PaymentPage() {
   }
 
   return (
-    <section className="min-h-[calc(100vh-5rem)] bg-[#f3f6fb] px-4 py-8 sm:px-6 lg:px-8">
+    <section className="min-h-[calc(100vh-5rem)] bg-[#f3f6fb] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-2xl shadow-slate-200/80">
         <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-          <aside className="border-b border-slate-200 bg-[#fcfcfd] p-8 lg:min-h-[760px] lg:border-b-0 lg:border-r lg:p-10">
+          <aside className="border-b border-slate-200 bg-[#fcfcfd] p-5 sm:p-8 lg:min-h-[760px] lg:border-b-0 lg:border-r lg:p-10">
             <div className="flex items-center gap-3">
               <Link
                 to="/cart"
@@ -107,8 +112,8 @@ export default function PaymentPage() {
             </div>
 
             <div className="mt-14">
-              <p className="text-3xl font-medium text-slate-600">Pay</p>
-              <h1 className="mt-2 text-5xl font-black tracking-tight text-slate-900">
+              <p className="text-2xl font-medium text-slate-600 sm:text-3xl">Pay</p>
+              <h1 className="mt-2 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
                 {formatCurrency(total)}
               </h1>
             </div>
@@ -117,10 +122,10 @@ export default function PaymentPage() {
               {items.map((item) => (
                 <div key={item.id} className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="truncate text-xl font-semibold text-slate-700">{item.name}</p>
+                    <p className="truncate text-lg font-semibold text-slate-700 sm:text-xl">{item.name}</p>
                     <p className="mt-1 text-sm text-slate-400">Qty {item.quantity}</p>
                   </div>
-                  <p className="shrink-0 text-xl font-semibold text-slate-700">
+                  <p className="shrink-0 text-lg font-semibold text-slate-700 sm:text-xl">
                     {formatCurrency(item.price * item.quantity)}
                   </p>
                 </div>
@@ -142,12 +147,12 @@ export default function PaymentPage() {
             </div>
           </aside>
 
-          <div className="p-8 lg:p-10">
+          <div className="p-5 sm:p-8 lg:p-10">
             <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-sky-700">
                 Select payment method
               </p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                 Complete your order
               </h2>
               <p className="mt-3 text-sm leading-7 text-slate-500">

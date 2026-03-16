@@ -2,25 +2,53 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { ArrowRight, Minus, Plus, ShieldCheck, ShoppingBag, Trash2 } from "lucide-react"
 import { useCartStore } from "./cart.store"
-import { syncCartToBackend } from "./cart.api"
+import {
+  addServerCartItem,
+  deleteServerCartItem,
+  updateServerCartItem,
+} from "./cart.api"
 
 export default function CartPage() {
   const navigate = useNavigate()
   const items = useCartStore((state) => state.items)
   const addItem = useCartStore((state) => state.addItem)
   const removeItem = useCartStore((state) => state.removeItem)
+  const setServerItemId = useCartStore((state) => state.setServerItemId)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
-  const syncIfLoggedIn = async () => {
+  const syncIncremental = async (
+    item: (typeof items)[number],
+    action: "increment" | "decrement" | "remove"
+  ) => {
     if (!localStorage.getItem("accessToken")) {
       return
     }
 
     try {
-      await syncCartToBackend(useCartStore.getState().items)
+      if (action === "increment") {
+        if (!item.serverItemId) {
+          const createdItem = await addServerCartItem(item.id, 1)
+          setServerItemId(item.id, createdItem.id)
+          return
+        }
+
+        await updateServerCartItem(item.serverItemId, item.quantity + 1)
+        return
+      }
+
+      if (!item.serverItemId) {
+        return
+      }
+
+      if (action === "remove" || item.quantity === 1) {
+        await deleteServerCartItem(item.serverItemId)
+        return
+      }
+
+      await updateServerCartItem(item.serverItemId, item.quantity - 1)
     } catch (error) {
       console.error("Cart sync failed", error)
     }
@@ -121,8 +149,8 @@ export default function CartPage() {
 
                   <button
                     onClick={async () => {
+                      await syncIncremental(item, "remove")
                       removeItem(item.id)
-                      await syncIfLoggedIn()
                     }}
                     className="hidden rounded-full border border-rose-200 p-2 text-rose-500 transition-all hover:scale-105 hover:bg-rose-50 sm:inline-flex"
                     aria-label={`Remove ${item.name}`}
@@ -135,8 +163,8 @@ export default function CartPage() {
                   <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 p-1 shadow-sm">
                     <button
                       onClick={async () => {
+                        await syncIncremental(item, "decrement")
                         removeItem(item.id)
-                        await syncIfLoggedIn()
                       }}
                       className="rounded-full p-2 text-slate-600 transition-all hover:scale-105 hover:bg-white"
                       aria-label={`Decrease quantity of ${item.name}`}
@@ -148,13 +176,14 @@ export default function CartPage() {
                     </span>
                     <button
                       onClick={async () => {
+                        await syncIncremental(item, "increment")
                         addItem({
                           id: item.id,
                           image: item.image,
                           name: item.name,
                           price: item.price,
+                          serverItemId: item.serverItemId,
                         })
-                        await syncIfLoggedIn()
                       }}
                       className="rounded-full bg-slate-950 p-2 text-white shadow-lg transition-all hover:scale-105"
                       aria-label={`Increase quantity of ${item.name}`}
@@ -165,8 +194,8 @@ export default function CartPage() {
 
                   <button
                     onClick={async () => {
+                      await syncIncremental(item, "remove")
                       removeItem(item.id)
-                      await syncIfLoggedIn()
                     }}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-rose-500 transition-all hover:scale-105 sm:hidden"
                   >
