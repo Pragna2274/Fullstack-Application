@@ -10,11 +10,12 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ) => {
+  //JWT tokens are usually sent in the header
   const authHeader = req.headers.authorization
 
   if (!authHeader) {
     return res.status(401).json({ message: "No token provided" })
-  }
+}
 
   const token = authHeader.split(" ")[1]
 

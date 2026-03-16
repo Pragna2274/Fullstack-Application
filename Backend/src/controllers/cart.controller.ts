@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import * as cartService from "../services/cart.service.js"
 import { addToCartSchema, updateCartSchema } from "../validations/cart.validation.js"
 
+//Extending the Express Request Interface
 interface AuthRequest extends Request {
   userId?: string
 }

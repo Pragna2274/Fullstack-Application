@@ -25,8 +25,8 @@ export default function PaymentPage() {
   const addOrder = useOrdersStore((state) => state.addOrder)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("UPI")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
-  const [isOrderPlaced, setIsOrderPlaced] = useState(false)
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)          //Used to disable multiple clicks.
+  const [isOrderPlaced, setIsOrderPlaced] = useState(false)             //Used to prevent redirect issues.
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
