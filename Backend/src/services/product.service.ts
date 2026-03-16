@@ -62,12 +62,3 @@ export const deleteProduct = async (id: string) => {
     where: { id }
   })
 }
-
-export const getFeaturedProducts = async () => {
-  return prisma.product.findMany({
-    where: {
-      featured: true
-    },
-    take: 6
-  })
-}

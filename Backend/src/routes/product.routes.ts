@@ -3,7 +3,6 @@ import * as productController from "../controllers/product.controller.js"
 
 const router = Router()
 
-router.get("/featured", productController.getFeaturedProducts)
 router.get("/", productController.getProducts)
 router.get("/:id", productController.getProduct)
 router.post("/", productController.createProduct)
