@@ -37,14 +37,6 @@ export const deleteServerCartItem = async (itemId: string) => {
   return res.data
 }
 
-export const syncCartToBackend = async (items: CartItem[]) => {
-  const existingCart = await getServerCart()
-  const existingItems = existingCart?.items ?? []
-
-  await Promise.all(existingItems.map((item) => deleteServerCartItem(item.id)))
-  await Promise.all(items.map((item) => addServerCartItem(item.id, item.quantity)))
-}
-
 export const loadCartFromBackend = async (): Promise<CartItem[]> => {
   const serverCart = await getServerCart()
   const items = serverCart?.items ?? []
