@@ -87,13 +87,13 @@ export default function Navbar() {
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {token ? (
-              <Link to="/profile" className="hidden sm:block md:hidden">
+              <Link to="/profile" className="block md:hidden">
                 <Button
                   variant="outline"
-                  className="rounded-full border-slate-200 bg-white px-4 text-slate-700 hover:bg-sky-50 hover:text-sky-700"
+                  className="rounded-full border-slate-200 bg-white px-3 text-slate-700 hover:bg-sky-50 hover:text-sky-700 sm:px-4"
                 >
                   <UserRound className="h-4 w-4" />
-                  Profile
+                  <span className="hidden sm:inline">Profile</span>
                 </Button>
               </Link>
             ) : null}
