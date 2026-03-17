@@ -109,7 +109,7 @@ export default function CartSidebar({ open, setOpen }: Props) {
 
                   <div className="mt-4 flex items-center justify-between">
                     <div className="inline-flex items-center rounded-full bg-white p-1 shadow-sm">
-                      <button
+                      <button 
                         onClick={async () => {
                           await syncIncremental(item, "decrement")
                           removeItem(item.id)
@@ -124,7 +124,7 @@ export default function CartSidebar({ open, setOpen }: Props) {
                       <button
                         onClick={async () => {
                           await syncIncremental(item, "increment")
-                          addItem({
+                          addItem({ 
                             id: item.id,
                             image: item.image,
                             name: item.name,

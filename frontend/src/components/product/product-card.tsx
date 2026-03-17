@@ -114,7 +114,7 @@ export default function ProductCard({ product }: Props) {
                 onClick={async () => {
                   await removeFromBackendIfLoggedIn()
                   removeItem(product.id)
-                }}
+                }} 
                 className="rounded-full bg-white p-2 text-slate-700 transition-all hover:scale-105"
                 aria-label={`Decrease quantity of ${product.name}`}
               >
