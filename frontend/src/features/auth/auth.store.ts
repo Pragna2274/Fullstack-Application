@@ -11,7 +11,6 @@ type AuthState = {
   currentUser: UserProfile | null
   setCurrentUser: (profile: Omit<UserProfile, "address"> & { address?: string }) => void
   updateAddress: (address: string) => void
-  syncCurrentUserFromStorage: () => void
   logout: () => void
 }
 
@@ -49,15 +48,6 @@ export const useAuthStore = create<AuthState>()(
           return {
             currentUser: nextProfile,
           }
-        }),
-
-      syncCurrentUserFromStorage: () =>
-        set((state) => {
-          if (state.currentUser) {
-            return state
-          }
-
-          return state
         }),
 
       logout: () =>

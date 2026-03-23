@@ -9,6 +9,7 @@ export const API = axios.create({
     "Content-Type": "application/json",
   },
 })
+//Attach token to every request. If it expires, automatically refresh it and retry the request without disturbing the user.
 
 type RetryableRequestConfig = {
   _retry?: boolean

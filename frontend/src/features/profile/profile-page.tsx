@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const updateAddress = useAuthStore((state) => state.updateAddress)
   const ordersByUser = useOrdersStore((state) => state.ordersByUser)
   const [address, setAddress] = useState(currentUser?.address || "")
+  const [addressSavedMessage, setAddressSavedMessage] = useState("")
 
   const orderCount = useMemo(() => {
     if (!currentUser?.email) {
@@ -36,6 +37,11 @@ export default function ProfilePage() {
     .join("")
     .slice(0, 2)
     .toUpperCase()
+
+  const handleSaveAddress = () => {
+    updateAddress(address)
+    setAddressSavedMessage("Address saved successfully")
+  }
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
@@ -110,19 +116,30 @@ export default function ProfilePage() {
 
             <textarea
               value={address}
-              onChange={(event) => setAddress(event.target.value)}
+              onChange={(event) => {
+                setAddress(event.target.value)
+                if (addressSavedMessage) {
+                  setAddressSavedMessage("")
+                }
+              }}
               rows={5}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-sky-400 focus:bg-white"
               placeholder="Add house number, street, landmark, city, and pincode"
             />
 
             <button
-              onClick={() => updateAddress(address)}
+              onClick={handleSaveAddress}
               className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-slate-800"
             >
               <PencilLine className="h-4 w-4" />
               Save address
             </button>
+
+            {addressSavedMessage ? (
+              <p className="mt-3 text-sm font-medium text-emerald-600">
+                {addressSavedMessage}
+              </p>
+            ) : null}
           </div>
 
           <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">

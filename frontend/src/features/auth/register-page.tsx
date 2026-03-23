@@ -5,6 +5,40 @@ import { useNavigate, Link } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const getRegisterValidationMessage = ({
+  name,
+  email,
+  password,
+}: {
+  name: string
+  email: string
+  password: string
+}) => {
+  if (!name.trim()) {
+    return "Name is required"
+  }
+
+  if (!email.trim()) {
+    return "Email is required"
+  }
+
+  if (!emailPattern.test(email.trim())) {
+    return "Invalid email"
+  }
+
+  if (!password) {
+    return "Password is required"
+  }
+
+  if (password.length < 6) {
+    return "Password must be at least 6 characters"
+  }
+
+  return null
+}
+
 export default function RegisterPage() {
 
   const navigate = useNavigate()
@@ -14,41 +48,60 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
- const handleRegister = async () => {
-  if (isSubmitting) {
-    return
-  }
+  const handleRegister = async () => {
+    if (isSubmitting) {
+      return
+    }
 
-  try {
-    setIsSubmitting(true)
-
-    await registerUser({
+    const validationMessage = getRegisterValidationMessage({
       name,
       email,
-      password
+      password,
     })
 
-    alert("Registration successful")
+    if (validationMessage) {
+      alert(validationMessage)
+      return
+    }
 
-    navigate("/login")
+    try {
+      setIsSubmitting(true)
 
-  } catch (err: unknown) {
-    const rawMessage = isAxiosError(err)
-      ? err.response?.data?.message || err.message
-      : "Registration failed"
+      await registerUser({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      })
 
-    const message =
-      typeof rawMessage === "string" &&
-      rawMessage.includes("Unique constraint failed on the fields: (`token`)")
-        ? "Registration completed with a server token conflict. Please wait a moment and try again once."
+      alert("Registration successful")
+
+      navigate("/login")
+    } catch (err: unknown) {
+      const rawMessage = isAxiosError(err)
+        ? err.response?.data?.message || err.message
+        : "Registration failed"
+
+      const normalizedMessage = Array.isArray(rawMessage)
+        ? rawMessage.find(
+            (item): item is { message?: string } =>
+              typeof item === "object" &&
+              item !== null &&
+              "message" in item &&
+              typeof item.message === "string",
+          )?.message || "Registration failed"
         : rawMessage
 
-    alert(message)
-  } finally {
-    setIsSubmitting(false)
+      const message =
+        typeof normalizedMessage === "string" &&
+        normalizedMessage.includes("Unique constraint failed on the fields: (`token`)")
+          ? "Registration completed with a server token conflict. Please wait a moment and try again once."
+          : normalizedMessage
 
+      alert(typeof message === "string" ? message : "Registration failed")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
-}
 
   return (
     <div className="flex flex-col gap-4 max-w-sm mx-auto mt-40">

@@ -6,7 +6,7 @@ interface AuthRequest extends Request {
   userId?: string
 }
 
-// place order (checkout)
+// place order POST(checkout)
 export const placeOrder = async (req: AuthRequest, res: Response) => {
   try {
 
@@ -30,7 +30,7 @@ export const placeOrder = async (req: AuthRequest, res: Response) => {
 }
 
 
-// get all orders for logged in user
+// GET all orders for logged in user
 export const getOrders = async (req: AuthRequest, res: Response) => {
   try {
 
