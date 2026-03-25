@@ -6,6 +6,7 @@ const LoginPage = lazy(() => import("@/features/auth/login-page"))
 const RegisterPage = lazy(() => import("@/features/auth/register-page"))
 
 const HomePage = lazy(() => import("@/features/products/home-page"))
+const ProductDetailPage = lazy(() => import("@/features/products/product-detail-page"))
 const CartPage = lazy(() => import("@/features/cart/cart-page"))
 
 const OrdersPage = lazy(() => import("@/features/orders/orders-page"))
@@ -24,6 +25,8 @@ export default function AppRoutes() {
       <Routes>
 
         <Route path="/" element={<HomePage />} />
+
+        <Route path="/product/:id" element={<ProductDetailPage />} />
 
         <Route path="/login" element={<LoginPage />} />
         

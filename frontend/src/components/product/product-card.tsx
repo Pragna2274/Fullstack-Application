@@ -1,4 +1,5 @@
 import { Minus, Plus, ShoppingBag } from "lucide-react"
+import { Link } from "react-router-dom"
 import { useCartStore } from "@/features/cart/cart.store"
 import {
   addServerCartItem,
@@ -64,28 +65,27 @@ export default function ProductCard({ product }: Props) {
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-lg shadow-slate-200/60 transition-all hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-56 w-full object-cover transition-all duration-500 group-hover:scale-105"
-        />
-        {product.category ? (
-          <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-sky-700 shadow-md">
-            {product.category}
-          </span>
-        ) : null}
-      </div>
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="relative overflow-hidden">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-56 w-full object-cover transition-all duration-500 group-hover:scale-105"
+          />
+          {product.category ? (
+            <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-sky-700 shadow-md">
+              {product.category}
+            </span>
+          ) : null}
+        </div>
+      </Link>
 
       <div className="flex flex-1 flex-col gap-4 p-5">
-        <div className="flex-1">
+        <Link to={`/product/${product.id}`} className="flex-1">
           <h3 className="text-xl font-black tracking-tight text-slate-900">
             {product.name}
           </h3>
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
-            {product.description}
-          </p>
-        </div>
+        </Link>
 
         <div className="flex flex-col gap-4">
           <div className="min-w-0">
