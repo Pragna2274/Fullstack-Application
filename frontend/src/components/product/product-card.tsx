@@ -63,7 +63,7 @@ export default function ProductCard({ product }: Props) {
   }
 
   return (
-    <article className="group overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-lg shadow-slate-200/60 transition-all hover:-translate-y-1 hover:shadow-xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-lg shadow-slate-200/60 transition-all hover:-translate-y-1 hover:shadow-xl">
       <div className="relative overflow-hidden">
         <img
           src={product.image}
@@ -77,8 +77,8 @@ export default function ProductCard({ product }: Props) {
         ) : null}
       </div>
 
-      <div className="space-y-4 p-5">
-        <div>
+      <div className="flex flex-1 flex-col gap-4 p-5">
+        <div className="flex-1">
           <h3 className="text-xl font-black tracking-tight text-slate-900">
             {product.name}
           </h3>
@@ -87,8 +87,8 @@ export default function ProductCard({ product }: Props) {
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <div>
+        <div className="flex flex-col gap-4">
+          <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
               Price
             </p>
@@ -103,13 +103,13 @@ export default function ProductCard({ product }: Props) {
                 addItem(product)
                 await addToBackendIfLoggedIn()
               }}
-              className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105"
             >
               <ShoppingBag className="h-4 w-4" />
               Add to Cart
             </button>
           ) : (
-            <div className="inline-flex items-center gap-3 rounded-full border border-sky-100 bg-sky-50 px-3 py-2 shadow-sm">
+            <div className="inline-flex w-full items-center justify-between gap-3 rounded-full border border-sky-100 bg-sky-50 px-3 py-2 shadow-sm">
               <button
                 onClick={async () => {
                   await removeFromBackendIfLoggedIn()

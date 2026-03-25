@@ -49,7 +49,6 @@ export default function AppRoutes() {
           }
         />
 
-        {/* PAYMENT PAGE */}
         <Route
           path="/payment"
           element={

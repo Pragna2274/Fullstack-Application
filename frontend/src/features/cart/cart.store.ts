@@ -15,7 +15,7 @@ type CartStore = {
   removeItem: (id: string) => void
   setServerItemId: (productId: string, serverItemId?: string) => void
   setItems: (items: CartItem[]) => void
-  clearCart: () => void
+  clearCart: () => void 
 }
 
 export const useCartStore = create<CartStore>((set) => ({
