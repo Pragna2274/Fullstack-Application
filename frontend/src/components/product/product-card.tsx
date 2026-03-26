@@ -89,7 +89,7 @@ export default function ProductCard({ product }: Props) {
 
         <div className="flex flex-col gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
               Price
             </p>
             <p className="text-2xl font-black text-sky-700">

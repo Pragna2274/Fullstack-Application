@@ -45,7 +45,7 @@ export default function Navbar() {
               </div>
               <div className="min-w-0">
                 <p className="text-lg font-black tracking-tight text-slate-950 sm:text-xl">Feasta</p>
-                <p className="hidden text-[11px] font-medium uppercase tracking-[0.28em] text-slate-400 sm:block">
+                <p className="hidden text-[11px] font-medium uppercase tracking-[0.28em] text-slate-500 sm:block">
                   Simple food ordering
                 </p>
               </div>

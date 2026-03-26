@@ -123,7 +123,7 @@ export default function PaymentPage() {
                 <div key={item.id} className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="truncate text-lg font-semibold text-slate-700 sm:text-xl">{item.name}</p>
-                    <p className="mt-1 text-sm text-slate-400">Qty {item.quantity}</p>
+                    <p className="mt-1 text-sm text-slate-500">Qty {item.quantity}</p>
                   </div>
                   <p className="shrink-0 text-lg font-semibold text-slate-700 sm:text-xl">
                     {formatCurrency(item.price * item.quantity)}
@@ -135,14 +135,14 @@ export default function PaymentPage() {
             <div className="mt-14 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
                     Delivery address
                   </p>
                   <p className="mt-2 text-base font-medium leading-7 text-slate-700">
                     {currentUser.address || "Add address in profile"}
                   </p>
                 </div>
-                <MapPin className="mt-1 h-5 w-5 text-slate-400" />
+                <MapPin className="mt-1 h-5 w-5 text-slate-500" />
               </div>
             </div>
           </aside>

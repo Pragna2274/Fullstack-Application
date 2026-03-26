@@ -201,7 +201,7 @@ export default function ProductDetailPage() {
               <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl lg:text-[2.2rem]">
                 {product.name}
               </h1>
-              <p className="mt-3 text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">
+              <p className="mt-3 text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">
                 {getServingLabel(product.category)}
               </p>
               <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
@@ -209,7 +209,7 @@ export default function ProductDetailPage() {
               </p>
 
               <div className="mt-4 rounded-[24px] border border-sky-100 bg-sky-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                   Price
                 </p>
                 <p className="mt-2 text-3xl font-black text-sky-700 sm:text-[2.25rem]">
@@ -219,7 +219,7 @@ export default function ProductDetailPage() {
 
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                     Prep style
                   </p>
                   <p className="mt-2 text-sm font-semibold text-slate-900">
@@ -227,7 +227,7 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
                 <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                     Portion
                   </p>
                   <p className="mt-2 text-sm font-semibold text-slate-900">
@@ -235,7 +235,7 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
                 <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                     Delivery fit
                   </p>
                   <p className="mt-2 text-sm font-semibold text-slate-900">
